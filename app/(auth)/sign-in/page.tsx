@@ -1,12 +1,18 @@
-import SignInModule from "@/modules/auth/sign-in/Module";
+import SignInModule from "@/app/modules/auth/_sign-in/Module";
+import { headers }   from "next/headers";
+import { redirect }  from "next/navigation";
+import { auth }      from "@/lib/auth";       // wherever you actually export `auth`
 
+const SignInPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-const SingInPage = () => {
-  return (
-    <>
-    <SignInModule />
-    </>
-  );
+  if (session) {
+    redirect("/");
+  }
+
+  return <SignInModule />;
 };
 
-export default SingInPage;
+export default SignInPage;
