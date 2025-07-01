@@ -18,15 +18,14 @@ export const auth = betterAuth({
   plugins: [
     emailOTP({
       async sendVerificationOTP({ email, otp }) {
-        console.log("Sending OTP…", { email, otp });
         await resend.emails.send({
-          from: "onboarding@your-domain.com",
+          from: "RAI-LMS Rohit Rai <onboarding@resend.dev>",
           to: [email],
-          subject: "Your sign‑in OTP",
-          html: `<p>Your OTP is <strong>${otp}</strong></p>`,
+          subject: "RAI-LMS Verify Your Email",
+          html:`<p>Your OTP is <strong> ${otp} </strong> </p>`
         });
-        console.log("Resend.emails.send() returned");
       },
     }),
   ],
 });
+

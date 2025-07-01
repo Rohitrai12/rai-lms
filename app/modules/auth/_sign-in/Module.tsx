@@ -47,7 +47,7 @@ function SignInModule() {
         fetchOptions: {
           onSuccess: () => {
             toast.success("Email sent");
-            router.push("/verify-request?email=" + email);
+            router.push(`/verify-request?email=${email}`);
           },
           onError: () => {
             toast.error("Error sending OTP");
@@ -97,6 +97,7 @@ function SignInModule() {
             type="email"
             placeholder="Enter your Email"
             value={email}
+            required
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
