@@ -34,6 +34,7 @@ export const CourseCategories = [
 export const CourseLevel = ["Beginner", "Intermediate", "Advanced"]
 export const CourseStatus = ["Draft", "Published", "Archived"]
 
+
 export const CourseSchema = z.object({
   title: z.string().min(3).max(100),
   smallDescription: z.string().min(3).max(200),

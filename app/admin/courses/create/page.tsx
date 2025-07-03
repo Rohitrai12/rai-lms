@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RichTextEditior } from "@/components/rich-text-editor/Editor";
 
 export default function CourseCreation() {
   const form = useForm<CourseSchemaType>({
@@ -112,7 +113,7 @@ export default function CourseCreation() {
                     </FormItem>
                   )}
                 />
-                <Button
+                 <Button
                   type="button"
                   onClick={() => {
                     const titleValue = form.getValues("title");
@@ -144,15 +145,14 @@ export default function CourseCreation() {
                 )}
               />
 
-              {/* Description */}
-              <FormField
+               <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-full">
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="Add Description" />
+                      <RichTextEditior field={field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

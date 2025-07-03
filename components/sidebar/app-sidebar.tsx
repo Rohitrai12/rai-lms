@@ -135,7 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/admin">
-                <GraduationCap className="!size-5" />
+                <GraduationCap className="size-5" />
                 <span className="text-base font-semibold">RAI-LMS</span>
               </Link>
             </SidebarMenuButton>
