@@ -2,108 +2,106 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSeparator,
+    InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth-client";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Loader2 } from "lucide-react";
-import { useSearchParams, useRouter } from "next/navigation";
-import React, { useState, useTransition, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
-function VerifyOTPModule() {
-  const [otp, setOtp] = useState("");
-  const [isPending, startTransition] = useTransition();
+export default function VerifyRequest() {
+    const router = useRouter();
+    const [otp, setOtp] = useState("");
+    const [emailPending, startTransition] = useTransition();
+    const params = useSearchParams();
+    const email = params.get("email") as string;
+    const isOtpCompleted = otp.length === 6;
 
-  const params = useSearchParams();
-  const router = useRouter();
-
-  const email = params.get("email");
-
-  useEffect(() => {
-    if (!email) {
-      toast.error("No email provided in the URL");
-      router.push("/sign-in"); // fallback redirect
+    function verifyOtp() {
+        startTransition(async () => {
+            await authClient.signIn.emailOtp({
+                email: email,
+                otp: otp,
+                fetchOptions: {
+                    onSuccess: () => {
+                        toast.success("Email verified successfully!");
+                        router.push("/");
+                    },
+                    onError: () => {
+                        toast.error(
+                            "Invalid or expired code. Please try again."
+                        );
+                    },
+                },
+            });
+        });
     }
-  }, [email, router]);
 
-  const isOTPCompleted = otp.length === 6;
-
- function verifyOtp() {
-  if (!email) return;
-
-  startTransition(async () => {
-    try {
-      await authClient.emailOtp.verifyEmail({ email, otp });
-
-      toast.success("Email verified successfully!");
-      router.push("/");
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Invalid or expired OTP. Please try again."
-      );
-    }
-  });
+    return (
+        <Card className="w-full mx-auto">
+            <CardHeader className="text-center">
+                <CardTitle className="text-xl">
+                    Please check your email
+                </CardTitle>
+                <CardDescription>
+                    We've sent a 6-digit verification code to your email
+                    address. Please check your inbox and enter the code below.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="flex flex-col items-center space-y-2">
+                    <InputOTP
+                        value={otp}
+                        onChange={(value) => setOtp(value)}
+                        maxLength={6}
+                        className="gap-2"
+                        pattern={REGEXP_ONLY_DIGITS}
+                    >
+                        <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                        </InputOTPGroup>
+                        <InputOTPSeparator />
+                        <InputOTPGroup>
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                    </InputOTP>
+                    <p className="text-sm text-muted-foreground">
+                        Enter the 6-digit code from your email
+                    </p>
+                </div>
+                <Button
+                    onClick={verifyOtp}
+                    disabled={emailPending || !isOtpCompleted}
+                    className="w-full cursor-pointer"
+                >
+                    {emailPending ? (
+                        <>
+                            <Loader2 className="size-4 animate-spin" />
+                            <span>Loading...</span>
+                        </>
+                    ) : (
+                        <>
+                            <span>Verify Email</span>
+                        </>
+                    )}
+                </Button>
+            </CardContent>
+        </Card>
+    );
 }
-
-
-  return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="text-center">
-        <CardTitle className="text-xl">Verify Your Email</CardTitle>
-        <CardDescription>
-          Enter the 6-digit verification code we sent to your email address.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-col items-center space-y-2">
-          <InputOTP
-            maxLength={6}
-            className="gap-2"
-            value={otp}
-            onChange={setOtp}
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-            </InputOTPGroup>
-            <InputOTPGroup>
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
-          <p className="text-sm text-muted-foreground mt-2">
-            6-digit code sent to your email.
-          </p>
-        </div>
-
-        <Button
-          className="w-full"
-          onClick={verifyOtp}
-          disabled={isPending || !isOTPCompleted}
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              <span className="ml-2">Verifying...</span>
-            </>
-          ) : (
-            <>Verify Account</>
-          )}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-}
-
-export default VerifyOTPModule;
