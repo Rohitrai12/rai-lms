@@ -49,7 +49,7 @@ export default function Home() {
         await authClient.signOut({
             fetchOptions: {
                 onSuccess: () => {
-                    router.push("/login"); // redirect to login page
+                    router.push("/sign-in"); // redirect to login page
                     toast.success("Signed out Successfully!");
                 },
             },
@@ -60,7 +60,7 @@ export default function Home() {
         <>
             <section className="relative py-20">
                 <div className="flex flex-col items-center text-center space-y-8">
-                    <Badge variant="outline">
+                    <Badge>
                         The Future of Learning Online Education
                     </Badge>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
@@ -85,7 +85,7 @@ export default function Home() {
                                 <></>
                             ) : (
                                 <Link
-                                    href="/login"
+                                    href="/sign-in"
                                     className={buttonVariants({
                                         size: "lg",
                                         variant: "outline",
